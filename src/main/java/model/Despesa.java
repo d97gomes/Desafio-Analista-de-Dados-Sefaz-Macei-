@@ -1,11 +1,12 @@
 package model;
 
-public record Despesa (
+public record Despesa(
         String instituicao,
         String uf,
         long populacao,
-        String estagio,
+        String conta,
+        EstagioDespesa estagio,
         double valor,
         int ano
-){
+) {
 }
