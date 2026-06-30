@@ -49,3 +49,15 @@ desktop.ini
 # *.parquet
 # saidas/
 # ==========================================================================
+
+# --- Java e Maven (Configuração adicionada) --------------------------------
+target/
+*.class
+*.jar
+*.war
+*.ear
+.mtj.tmp/
+*.uploaded
+
+# --- Logs do Java ---------------------------------------------------------
+*.log
