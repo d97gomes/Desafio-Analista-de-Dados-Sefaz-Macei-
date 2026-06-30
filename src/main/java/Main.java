@@ -2,6 +2,7 @@ import pipeline.Extractor;
 import pipeline.Transformer;
 import pipeline.CsvWriter;
 import model.Despesa;
+import analysis.QueryExecutor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +18,7 @@ public class Main {
 
         String[] anos = {"2020", "2021", "2022", "2023", "2024", "2025"};
 
+        // ✅ ETL: EXTRAÇÃO + TRANSFORMAÇÃO
         for (String ano : anos) {
 
             String caminhoZip;
@@ -33,16 +35,24 @@ public class Main {
 
             for (String linha : linhas) {
                 Despesa d = Transformer.transformar(linha, Integer.parseInt(ano));
-
                 if (d != null) {
                     todasDespesas.add(d);
                 }
             }
         }
 
-        // ✅ CSV final consolidado
+        // ✅ LOAD: gerar CSV consolidado
         CsvWriter.escrever(todasDespesas, caminhoCsv);
 
         System.out.println("✅ CSV CONSOLIDADO CRIADO!");
+
+        // ✅ CRIAR TABELA NO DUCKDB
+        QueryExecutor.criarTabela(caminhoCsv);
+
+        // ✅ ANÁLISE DE DADOS
+        QueryExecutor.analisarPorFuncao();
+        QueryExecutor.rankingCapitais();
+        QueryExecutor.analisarMaceio();
+        QueryExecutor.analisarAnos();
     }
 }
