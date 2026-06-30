@@ -1,4 +1,3 @@
-import analysis.QueryExecutor;
 import pipeline.Extractor;
 import pipeline.Transformer;
 import pipeline.CsvWriter;
@@ -11,34 +10,39 @@ public class Main {
 
     public static void main(String[] args) {
 
-        String caminhoZip = "dados_compactos/2020/finbra_CAP_DespesasporFuncao(AnexoI-E) (1).zip"; // AJUSTA AQUI
+        String basePath = "dados_compactos/";
         String caminhoCsv = "dados_limpos.csv";
 
-        // ✅ 1. extrair linhas do ZIP
-        List<String> linhas = Extractor.extrairLinhas(caminhoZip);
+        List<Despesa> todasDespesas = new ArrayList<>();
 
-        // ✅ 2. transformar em objetos
-        List<Despesa> despesas = new ArrayList<>();
+        String[] anos = {"2020", "2021", "2022", "2023", "2024", "2025"};
 
-        for (String linha : linhas) {
-            Despesa d = Transformer.transformar(linha, 2020);
+        for (String ano : anos) {
 
-            if (d != null) {
-                despesas.add(d);
+            String caminhoZip;
+
+            if (ano.equals("2020")) {
+                caminhoZip = basePath + ano + "/finbra_CAP_DespesasporFuncao(AnexoI-E) (1).zip";
+            } else {
+                caminhoZip = basePath + ano + "/finbra_CAP_DespesasporFuncao(AnexoI-E).zip";
+            }
+
+            System.out.println("📦 Processando ano: " + ano);
+
+            List<String> linhas = Extractor.extrairLinhas(caminhoZip);
+
+            for (String linha : linhas) {
+                Despesa d = Transformer.transformar(linha, Integer.parseInt(ano));
+
+                if (d != null) {
+                    todasDespesas.add(d);
+                }
             }
         }
 
-        // ✅ 3. gerar CSV
-        CsvWriter.escrever(despesas, caminhoCsv);
+        // ✅ CSV final consolidado
+        CsvWriter.escrever(todasDespesas, caminhoCsv);
 
-
-        // 🔥 4. CRIAR TABELA NO DUCKDB
-        QueryExecutor.criarTabela(caminhoCsv);
-
-        // 🔥 5. EXECUTAR ANALISE
-        QueryExecutor.executarAnalise();
-
-
-        System.out.println("✅ CSV gerado. Agora podemos analisar.");
+        System.out.println("✅ CSV CONSOLIDADO CRIADO!");
     }
 }
